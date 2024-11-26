@@ -15,7 +15,8 @@ public class Player extends Entity {
     private KeyHandler keyH;
     private BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
     private int spriteCounter = 0; // Added sprite counter for animation
-    private int spriteNum = 1; // Added sprite number tracking
+    private int spriteNum = 1;
+    int hasKey = 0;// Added sprite number tracking
 
     public Player(GamePanel gp, KeyHandler keyH) { // Corrected parameter type
         this.gp = gp;
@@ -29,6 +30,8 @@ public class Player extends Entity {
         solidArea = new Rectangle();
         solidArea.x = 8;
         solidArea.y = 16;
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
         solidArea.width = 32;
         solidArea.height = 32;
     }
@@ -83,6 +86,9 @@ public class Player extends Entity {
             collisionOn = false;
             gp.cChecker.checkTile(this);
 
+            //CHECK OBJECT COLLISION
+            int objIndex = gp.cChecker.checkObject(this, true);
+            pickupObject(objIndex);
 
             //IF COLLISION IS FALSE
             if(collisionOn == false) {
@@ -107,6 +113,35 @@ public class Player extends Entity {
                 }
             }
         }
+    }
+
+    public void pickupObject(int i) {
+
+        if(i != 999) {
+
+            gp.obj[i] = null;
+
+            String objectName = gp.obj[i].name;
+
+            switch(objectName) {
+                case "Key" -> {
+                    hasKey++;
+                    gp.obj[i] = null;
+                    System.out.println("Key: "+ hasKey);
+                    break;
+                }
+
+                case "Door" => {
+                    if(hasKey > 0) {
+                        gp.obj[i] = null;
+                        hasKey --;
+                    }
+                    System.out.println("Key: " + hasKey);
+                    break;
+                }
+            }
+        }
+
     }
 
     public void draw(Graphics2D g2) {
